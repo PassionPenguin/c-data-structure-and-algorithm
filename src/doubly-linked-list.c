@@ -54,6 +54,11 @@ void printList(DoublyLinkedList* list) {
 // Initialization
 DoublyLinkedList* init() {
     DoublyLinkedList* list = (DoublyLinkedList*)malloc(sizeof(DoublyLinkedList));
+    if(list == NULL) {
+        printf("Failed to allocate memory\n");
+        exit(1);
+    }
+
     list->head = NULL;
     list->tail = NULL;
     list->length = 0;
@@ -136,32 +141,42 @@ void removeNode(DoublyLinkedList* list, int index) {
         return;
     }
     Node* current = get(list, index);
-    if (current->prev != NULL) {
-        current->prev->next = current->next;
-    } else {
-        list->head = current->next;
+    if(current != NULL) {
+        if (current->prev != NULL) {
+            current->prev->next = current->next;
+        } else {
+            list->head = current->next;
+        }
+        if (current->next != NULL) {
+            current->next->prev = current->prev;
+        } else {
+            list->tail = current->prev;
+        }
+        free(current);
     }
-    if (current->next != NULL) {
-        current->next->prev = current->prev;
-    } else {
-        list->tail = current->prev;
-    }
-    free(current);
     list->length--;
 }
 
 int main() {
     DoublyLinkedList* list = init();
+
     insert(list, 0, 10);
     insert(list, 1, 20);
     insert(list, 2, 30);
     printList(list);
-    printf("Element at index 1: %d\n", get(list, 1)->data);
+
+    printf("Value at index 1: %d\n", get(list, 1)->data);
     printf("Index of value 20: %d\n", indexOf(list, 20));
+
     removeNode(list, 1);
     printList(list);
-    clear(list);
+
     printf("List empty: %d\n", empty(list));
+    printf("List length: %d\n", length(list));
+
+    clear(list);
+    printList(list);
+
     destroy(list);
     return 0;
 }

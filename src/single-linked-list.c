@@ -18,6 +18,10 @@ typedef struct LinkedList {
 // Initialization
 LinkedList *init() {
     LinkedList *list = (LinkedList *) malloc(sizeof(LinkedList)); // allocate memory for the list
+    if(list == NULL) {
+        printf("Failed to allocate memory for the list\n");
+        exit(1);
+    }
 
     // point the head of the list to a NULL and set its length to 0 - like a empty linked list should be
     list->head = NULL;
@@ -104,8 +108,15 @@ void removeNode(LinkedList *list, int index) {
             previous = current;
             current = current->next;
         }
-        previous->next = current->next;
-        free(current);
+
+        // unable to find the node. however that also means the node is not in the list
+        // mostly due to memory corruption
+        if(previous == NULL) {
+            return;
+        } else {
+            previous->next = current->next;
+            free(current);
+        }
     }
     list->length--;
 }

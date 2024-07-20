@@ -16,6 +16,11 @@ typedef struct {
 // Initialization
 SequentialList *init() {
     SequentialList *list = (SequentialList *) malloc(sizeof(SequentialList)); // allocate memory for the list
+    if(list == NULL) {
+        printf("Failed to allocate memory for the list\n");
+        exit(1);
+    }
+
     list->data = (int *) malloc(sizeof(int) * INITIAL_CAPACITY); // allocate memory for the data contained in the list
     list->length = 0;
     list->capacity = INITIAL_CAPACITY;

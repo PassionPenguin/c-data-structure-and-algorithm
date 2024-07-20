@@ -49,6 +49,11 @@ void printList(CircularLinkedList *list) {
 // Initialization
 CircularLinkedList *init() {
     CircularLinkedList *list = (CircularLinkedList *) malloc(sizeof(CircularLinkedList));
+    if(list == NULL) {
+        printf("Failed to allocate memory for the list\n");
+        exit(1);
+    }
+
     clear(list);
     return list;
 }
@@ -145,11 +150,18 @@ void removeNode(CircularLinkedList *list, int index) {
                 previous = current;
                 current = current->next;
             }
-            previous->next = current->next;
-            if (current == list->tail) {
-                list->tail = previous;
+
+            // unable to find the node. however that also means the node is not in the list
+            // mostly due to memory corruption
+            if(previous == NULL) {
+                return;
+            } else {
+                previous->next = current->next;
+                if (current == list->tail) {
+                    list->tail = previous;
+                }
+                free(current);
             }
-            free(current);
         }
     }
     list->length--;
