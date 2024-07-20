@@ -23,7 +23,7 @@ LinkedList *init() {
         exit(1);
     }
 
-    // point the head of the list to a NULL and set its length to 0 - like a empty linked list should be
+    // point the head of the list to a NULL and set its length to 0 - like an empty linked list should be
     list->head = NULL;
     list->length = 0;
     return list;
