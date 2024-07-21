@@ -4,22 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#define INITIAL_CAPACITY 10
-#define NULL_INDEX (-1)
-
-typedef struct {
-    int data;
-    int next;
-} Node;
-
-typedef struct {
-    Node nodes[INITIAL_CAPACITY];
-    int head;
-    int free;
-    int length;
-    int listSize;
-} StaticLinkedList;
+#include "static-linked-list.h"
 
 // Clear the list
 void clear(StaticLinkedList *list) {
@@ -66,15 +51,15 @@ void destroy(StaticLinkedList *list) {
 }
 
 // Get element by index
-int get(StaticLinkedList *list, int index) {
+Node* get(StaticLinkedList *list, int index) {
     if (index < 0 || index >= list->length) {
-        return -1;
+        return NULL;
     }
     int current = list->head;
     for (int i = 0; i < index; i++) {
         current = list->nodes[current].next;
     }
-    return list->nodes[current].data;
+    return &list->nodes[current];
 }
 
 // Get element by value
@@ -92,9 +77,9 @@ int indexOf(StaticLinkedList *list, int value) {
 }
 
 // Insert a node to the given index
-int insert(StaticLinkedList *list, int index, int value) {
+void insert(StaticLinkedList *list, int index, int value) {
     if (index < 0 || index > list->length || list->free == NULL_INDEX) {
-        return -1;
+        return;
     }
     int newNode = list->free;
     list->free = list->nodes[newNode].next;
@@ -113,13 +98,12 @@ int insert(StaticLinkedList *list, int index, int value) {
         list->nodes[prev].next = newNode;
     }
     list->length++;
-    return 0;
 }
 
 // Remove a node at the given index
-int removeNode(StaticLinkedList *list, int index) {
+void removeNode(StaticLinkedList *list, int index) {
     if (index < 0 || index >= list->length) {
-        return -1;
+        return;
     }
     int toRemove;
     if (index == 0) {
@@ -140,29 +124,4 @@ int removeNode(StaticLinkedList *list, int index) {
     list->nodes[toRemove].next = list->free;
     list->free = toRemove;
     list->length--;
-    return 0;
-}
-
-int main() {
-    StaticLinkedList *list = init();
-
-    insert(list, 0, 10);
-    insert(list, 1, 20);
-    insert(list, 2, 30);
-
-    printf("Element at index 1: %d\n", get(list, 1));
-    printf("Index of value 20: %d\n", indexOf(list, 20));
-    printf("Length: %d\n", length(list));
-    printf("Capacity: %d\n", size(list));
-    printf("Is empty: %d\n", empty(list));
-
-    removeNode(list, 1);
-    printf("Element at index 1 after removal: %d\n", get(list, 1));
-
-    clear(list);
-    printf("Is empty after clear: %d\n", empty(list));
-
-    destroy(list);
-
-    return 0;
 }

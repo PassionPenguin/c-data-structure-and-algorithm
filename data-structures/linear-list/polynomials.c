@@ -4,20 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-typedef struct Term Term;
-struct Term {
-    int coefficient;
-    int exponent;
-    Term *next;
-};
-
-typedef struct LinkedList {
-    Term *head;
-    int length;
-} LinkedList;
-
-typedef LinkedList Polynomial;
+#include "polynomials.h"
 
 // Initialization
 Polynomial *init() {

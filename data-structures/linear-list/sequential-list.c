@@ -4,14 +4,27 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "sequential-list.h"
 
-#define INITIAL_CAPACITY 10
+// Clear the list
+void clear(SequentialList *list) {
+    list->length = 0;
+}
 
-typedef struct {
-    int *data;
-    int length;
-    int capacity;
-} SequentialList;
+// Whether the list is empty
+int empty(SequentialList *list) {
+    return list->length == 0;
+}
+
+// Length of the list
+int length(SequentialList *list) {
+    return list->length;
+}
+
+// Capacity (size) of the list
+int size(SequentialList *list) {
+    return list->capacity;
+}
 
 // Initialization
 SequentialList *init() {
@@ -34,12 +47,11 @@ void destroy(SequentialList *list) {
 }
 
 // Get element by *index*
-int get(SequentialList *list, int pos, int *element) {
-    if (pos < 0 || pos >= list->length) {
-        return 0;
+int* get(SequentialList *list, int index) {
+    if (index < 0 || index >= list->length) {
+        return NULL;
     }
-    *element = list->data[pos];
-    return 1;
+    return &list->data[index];
 }
 
 // Get element by *value*
@@ -53,8 +65,8 @@ int indexOf(SequentialList *list, int value) {
 }
 
 // Insert an element by index
-int insert(SequentialList *list, int pos, int value) {
-    if (pos < 0 || pos > list->length) {
+int insert(SequentialList *list, int index, int value) {
+    if (index < 0 || index > list->length) {
         return 0;
     }
 
@@ -68,75 +80,21 @@ int insert(SequentialList *list, int pos, int value) {
     }
 
     // moving elements to the right
-    for (int i = list->length; i > pos; i--) {
+    for (int i = list->length; i > index; i--) {
         list->data[i] = list->data[i - 1];
     }
-    list->data[pos] = value;
+    list->data[index] = value;
     list->length++;
     return 1;
 }
 
 // Remove an element by index
-int removeElement(SequentialList *list, int pos) {
-    if (pos < 0 || pos >= list->length) {
-        return 0;
+void removeNode(SequentialList *list, int index) {
+    if (index < 0 || index >= list->length) {
+        return;
     }
-    for (int i = pos; i < list->length - 1; i++) {
+    for (int i = index; i < list->length - 1; i++) {
         list->data[i] = list->data[i + 1];
     }
     list->length--;
-    return 1;
-}
-
-// Clear the list
-void clear(SequentialList *list) {
-    list->length = 0;
-}
-
-// Whether the list is empty
-int empty(SequentialList *list) {
-    return list->length == 0;
-}
-
-// Length of the list
-int length(SequentialList *list) {
-    return list->length;
-}
-
-// Capacity (size) of the list
-int size(SequentialList *list) {
-    return list->capacity;
-}
-
-int main() {
-    SequentialList *list = init();
-    insert(list, 0, 10);
-    insert(list, 1, 20);
-    insert(list, 2, 30);
-
-    int value;
-    if (get(list, 1, &value)) {
-        printf("The element at position 1 is %d\n", value);
-    } else {
-        printf("Failed to get element at position 1\n");
-    }
-
-    printf("Index of element 20 is %d\n", indexOf(list, 20));
-
-    removeElement(list, 1);
-    printf("After removal");
-    if (get(list, 1, &value)) {
-        printf(", the element at position 1 is %d\n", value);
-    } else {
-        printf(", failed to get element at position 1\n");
-    }
-
-    printf("List length: %d\n", length(list));
-    printf("List capacity: %d\n", size(list));
-
-    clear(list);
-    printf("List is empty: %d\n", empty(list));
-
-    destroy(list);
-    return 0;
 }
