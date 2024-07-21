@@ -4,16 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-typedef struct Node {
-    int data;
-    struct Node *next;
-} Node;
-
-typedef struct LinkedStack {
-    Node *top;
-    int length;
-} LinkedStack;
+#include "linked-stack.h"
 
 // Clear the stack
 void clear(LinkedStack *stack) {
@@ -82,28 +73,4 @@ int pop(LinkedStack *stack, int *value) {
     free(temp);
     stack->length--;
     return 1;
-}
-
-int main() {
-    LinkedStack *stack = init();
-
-    int data[] = {0, 1, 2, 3, 4};
-    for (int i = 0; i < 5; i++) {
-        if (!push(stack, data[i])) {
-            printf("Stackoverflow\n");
-        } else {
-            printf("Pushed: %d\n", data[i]);
-        }
-    }
-
-    printf("Length of the stack: %d\n", length(stack));
-
-    int value;
-    while (!empty(stack)) {
-        pop(stack, &value);
-        printf("Popped: %d\n", value);
-    }
-
-    destroy(stack);
-    return 0;
 }

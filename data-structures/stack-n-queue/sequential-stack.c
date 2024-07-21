@@ -4,14 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#define INITIAL_CAPACITY 10
-
-typedef struct {
-    int *data;
-    int top;
-    int stackSize;
-} SequentialStack;
+#include "sequential-stack.h"
 
 // Clear the stack
 void clear(SequentialStack *stack) {
@@ -78,31 +71,4 @@ int pop(SequentialStack *stack, int *value) {
     if (stack->top == -1) return 0;
     *value = stack->data[stack->top--];
     return 1;
-}
-
-int main() {
-    SequentialStack *stack = init();
-
-    int data[] = {0, 1, 2, 3, 4};
-    for (int i = 0; i < 5; i++) {
-        if (!push(stack, data[i])) {
-            printf("Stackoverflow\n");
-        } else {
-            printf("Pushed: %d\n", data[i]);
-        }
-    }
-
-    printf("Length of the stack: %d\n", length(stack));
-    printf("Capacity of the stack: %d\n", size(stack));
-
-    int value;
-    while (!empty(stack)) {
-        pop(stack, &value);
-        printf("Popped: %d\n", value);
-    }
-
-    clear(stack);
-    destroy(stack);
-
-    return 0;
 }
