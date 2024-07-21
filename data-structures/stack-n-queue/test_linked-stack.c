@@ -2,8 +2,8 @@
 // Created by Hoarfroster on 21/7/2024.
 //
 
-#include "linked-stack.h"
 #include <stdio.h>
+#include "linked-stack.h"
 
 int main() {
     LinkedStack *stack = init();

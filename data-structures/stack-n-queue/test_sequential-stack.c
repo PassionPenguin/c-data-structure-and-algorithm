@@ -2,8 +2,8 @@
 // Created by Hoarfroster on 21/7/2024.
 //
 
-#include "sequential-stack.h"
 #include <stdio.h>
+#include "sequential-stack.h"
 
 int main() {
     SequentialStack *stack = init();

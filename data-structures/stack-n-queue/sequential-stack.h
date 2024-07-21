@@ -4,6 +4,7 @@
 
 #ifndef C_ALGORITHM_SEQUENTIAL_STACK_H
 #define C_ALGORITHM_SEQUENTIAL_STACK_H
+
 #define INITIAL_CAPACITY 10
 
 typedef struct {
