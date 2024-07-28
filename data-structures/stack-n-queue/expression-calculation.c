@@ -74,67 +74,23 @@ int pop(LinkedStack *stack) {
     return 1;
 }
 
-// returns 0 if no precedence, 1 if leftOpr > rightOpr, -1 if leftOpr < rightOpr
+// returns 1 if precedence `>=`, 0 if `<`
 int precedence(int leftOpr, int rightOpr) {
     // optimized switch table
     switch (leftOpr) {
         case '+':
         case '-':
-            switch (rightOpr) {
-                case '+':
-                case '-':
-                case ')':
-                    return 1;
-                case '*':
-                case '/':
-                case '(':
-                    return -1;
-                default:
-                    printf("Unknown operator %c", rightOpr);
-                    exit(1);
-            }
+            return (rightOpr == '+' || rightOpr == '-') ? 1 : 0;
         case '*':
         case '/':
-            switch (rightOpr) {
-                case '+':
-                case '-':
-                case '*':
-                case '/':
-                case ')':
-                    return 1;
-                case '(':
-                    return -1;
-                default:
-                    printf("Unknown operator %c", rightOpr);
-                    exit(1);
-            }
-        case '(':
-            switch (rightOpr) {
-                case '+':
-                case '-':
-                case '*':
-                case '/':
-                case '(':
-                    return -1;
-                case ')':
-                    return 0;
-                default:
-                    printf("Unknown operator %c", rightOpr);
-                    exit(1);
-            }
-        case ')':
-            if (rightOpr == '(') break;
-            return 1;
+            return (rightOpr == '*' || rightOpr == '/' || rightOpr == '+' || rightOpr == '-') ? 1 : 0;
         default:
-            printf("Unknown operator %c", rightOpr);
+            printf("Unknown operator %c", leftOpr);
             exit(1);
     }
-
-    printf("Unknown operator %c", rightOpr);
-    exit(1);
 }
 
-int operate(LinkedStack *operators, LinkedStack *operands) {
+void operate(LinkedStack *operators, LinkedStack *operands) {
     int rightOperand = operands->top->value;
     pop(operands);
     int leftOperand = operands->top->value;
@@ -144,82 +100,55 @@ int operate(LinkedStack *operators, LinkedStack *operands) {
 
     printf("Calculating: %d %c %d\n", leftOperand, operator, rightOperand);
 
+    int result;
     switch (operator) {
         case '+':
-            return leftOperand + rightOperand;
+            result = leftOperand + rightOperand;
+            break;
         case '-':
-            return leftOperand - rightOperand;
+            result = leftOperand - rightOperand;
+            break;
         case '*':
-            return leftOperand * rightOperand;
+            result = leftOperand * rightOperand;
+            break;
         case '/':
-            return leftOperand / rightOperand;
+            result = leftOperand / rightOperand;
+            break;
         default:
             printf("Unknown operator %c", operator);
             exit(1);
     }
+
+    push(operands, result);
+}
+
+int isDigit(int x) {
+    return x >= '0' && x <= '9';
 }
 
 int calculate(const char expression[], int size) {
     LinkedStack *operators = init(), *operands = init();
 
-    int isOperand = 0;
     for (int i = 0; i < size; i++) {
         char c = expression[i];
-        if (c >= '0' && c <= '9') {
-            if (isOperand) {
-                operands->top->value = operands->top->value * 10 + (c - '0');
-            } else {
-                isOperand = 1;
-                push(operands, c - '0');
-            }
-        } else if (c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')') {
-            isOperand = 0;
-            if (empty(operators)) {
-                push(operators, c);
-            } else {
-                if (precedence(operators->top->value, c) == -1) {
-                    push(operators, c);
-                } else {
-                    int delimiter_used = 0, mark = 1;
-                    while (!empty(operators) && mark) {
-                        // check if the top operator in `operators` precedes `c`
-                        switch (precedence(operators->top->value, c)) {
-                            case 1: // if so, calculate **opr `operators->top` opr**
-                                if (operators->top->value == '(') break;
-                                push(operands, operate(operators, operands));
-                                continue;
-                            case 0: // de-bracketed
-                                if (delimiter_used) {
-                                    mark = 0;
-                                } else {
-                                    pop(operators);
-                                    delimiter_used = 1;
-                                }
-                                break;
-                            case -1: // else push `c` to `operators`
-                                push(operators, c);
-                                mark = 0;
-                                break;
-                        }
-                    }
-
-                    if (empty(operators) && c != '(' && c != ')') {
-                        push(operators, c);
-                    }
-                }
-            }
+        if (isDigit(c)) {
+            int x = 0, j = i;
+            while(j < size && isDigit(expression[j])) x = x * 10 + (expression[j++] - '0'); // continue pushing number until non-numeric char found
+            i = j - 1;
+            push(operands, x);
+        } else if (c == '(') {
+            push(operators, '(');
+        } else if (c == ')') {
+            while(operators->top->value != '(') operate(operators, operands);
+            pop(operators); // pop the left parenthesis
+        } else {
+            while(!empty(operators) && operators->top->value != '(' && precedence(operators->top->value, c) > 0) operate(operators, operands);
+            push(operators, c);
         }
     }
-
-    while (!empty(operators)) {
-        push(operands, operate(operators, operands));
-    }
+    while(!empty(operators)) operate(operators, operands);
 
     int result = operands->top->value;
-    pop(operands);
-    if (!empty(operands)) {
-        exit(1); // more than one operand left. should be an error
-    }
 
     destroy(operators);
     destroy(operands);
@@ -228,8 +157,8 @@ int calculate(const char expression[], int size) {
 }
 
 int main() {
-    char expression1[] = "9+10*(5-(6/2))+2/2+4", expression1Size = 21;
-    printf("Result of expression %s is %d", expression1, calculate(expression1, expression1Size));
+    char expression1[] = "9+10*(5-(6/2))+2/2+4", expression1Size = 20;
+    printf("Result of expression %s is %d\n\n", expression1, calculate(expression1, expression1Size));
 
     char expression2[] = "20*5+(3-(5*2+2/1*2+2*(4/2)+1)+55/11-3)+2", expression2Size = 40;
     printf("Result of expression %s is %d", expression2, calculate(expression2, expression2Size));
