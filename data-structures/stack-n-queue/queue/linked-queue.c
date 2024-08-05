@@ -1,5 +1,5 @@
 //
-// Created by Hoarfroster on 20/7/2024.
+// Created by Hoarfroster on 06/8/2024.
 //
 
 #include <stdio.h>
@@ -50,7 +50,7 @@ void destroy(LinkedQueue *queue) {
     free(queue);
 }
 
-// Push an element to the front
+// Push an element to the rear
 int enqueue(LinkedQueue *queue, int value) {
     Node *newNode = (Node *)malloc(sizeof(Node));
     if (newNode == NULL) {
@@ -71,7 +71,7 @@ int enqueue(LinkedQueue *queue, int value) {
     return 1;
 }
 
-// Pop the rear element
+// Pop the front element
 int dequeue(LinkedQueue *queue, int *value) {
     if (queue->front == NULL) {
         return 0; // queue already empty
