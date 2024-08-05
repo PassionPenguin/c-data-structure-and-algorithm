@@ -32,10 +32,10 @@ SequentialQueue *init();
 // Destroy
 void destroy(SequentialQueue *queue);
 
-// Push an element to the front
+// Push an element to the rear
 int enqueue(SequentialQueue *queue, int value);
 
-// Pop the rear element
+// Pop the front element
 int dequeue(SequentialQueue *queue, int *value);
 
 #endif //C_ALGORITHM_SEQUENTIAL_QUEUE_H
